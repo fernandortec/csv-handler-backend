@@ -1,34 +1,35 @@
-import console from "console";
 import { parse } from "csv-parse";
-import { createReadStream, readFile, readFileSync } from "fs";
-import { resolve } from "path";
+import { createReadStream } from "fs";
+import path from "path";
 
-const results: any[] = [];
+type Object = { [key: string]: any };
 
-const parser = parse(
-  { columns: true },
-  (err, records: { [key: string]: string }[]) => {
-    if (err) throw new Error("Couldn't read file, please try again");
+export const filterData = async (filters: Object, data: any[]) => {
+  const results: string[] = [];
 
-    const filters = ["Basketball"];
+  if (Object.keys(filters).length === 0) return data.slice(1);
 
-    records.forEach((record) => {
-      Object.values(record).forEach((value) => {
-        if (filters.includes(value)) results.push(record);
-      });
+  data.forEach((column) => {
+    column.some((r) => {
+      if (Object.values(filters).includes(r)) results.push(column);
     });
-  }
-);
+  });
 
-const result: any = [];
+  return results;
+};
 
-export const parseCsv = (fileName: string) => {
-  createReadStream(resolve("src", "uploads", fileName))
-    .pipe(parser)
-    .on("data", (data) => {
-      result.push(data);
-    })
-    .on("end", () => {
-      return result;
-    });
+export const parseCsv = (fileName: string = "data.csv"): Promise<Object[]> => {
+  return new Promise((resolve, reject) => {
+    const result: Object[] = [];
+
+    const stream = createReadStream(path.resolve("src", "uploads", fileName));
+    const parser = parse();
+
+    stream.pipe(parser);
+
+    parser
+      .on("data", (data: Object) => result.push(data))
+      .on("end", () => resolve(result))
+      .on("error", (error) => reject(error));
+  });
 };

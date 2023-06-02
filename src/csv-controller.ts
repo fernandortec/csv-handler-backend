@@ -1,5 +1,5 @@
 import { Request, Response, request } from "express";
-import { parseCsv } from "./csv-parse";
+import { filterData, parseCsv } from "./csv-parse";
 
 export class CSVRepository {
   write() {}
@@ -15,8 +15,9 @@ export class CSVController {
   }
 
   async read(request: Request, response: Response): Promise<Response> {
-    const comsething = parseCsv('data.csv');
-    console.log(comsething)
-    return response.json("request.fileName");
+    const csvData = await parseCsv();
+    const filteredData = await filterData(request.query, csvData);
+
+    return response.json(filteredData);
   }
 }

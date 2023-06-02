@@ -9,3 +9,4 @@ const csvController = new CSVController();
 export const csvRouter = Router();
 
 csvRouter.post("/api/files", upload.single("file"), csvController.write);
+csvRouter.get('/api/users', csvController.read)

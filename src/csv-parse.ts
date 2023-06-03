@@ -4,21 +4,21 @@ import path from "path";
 
 type Object = { [key: string]: any };
 
-export const filterData = async (filters: Object, data: any[]) => {
-  const results: string[] = [];
-
+export const filterData = async (filters: Object, data: string[][]) => {
   if (Object.keys(filters).length === 0) return data.slice(1);
 
+  const results: string[][] = [];
+
   data.forEach((column) => {
-    column.some((r) => {
-      if (Object.values(filters).includes(r)) results.push(column);
-    });
+    if (column.some((r) => Object.values(filters).includes(r))) {
+      results.push(column);
+    }
   });
 
   return results;
 };
 
-export const parseCsv = (fileName: string = "data.csv"): Promise<Object[]> => {
+export const parseCsv = (fileName: string = "data.csv"): Promise<string[][]> => {
   return new Promise((resolve, reject) => {
     const result: Object[] = [];
 

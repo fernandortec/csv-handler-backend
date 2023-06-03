@@ -1,11 +1,5 @@
 import { Request, Response, request } from "express";
 import { filterData, parseCsv } from "./csv-parse";
-
-export class CSVRepository {
-  write() {}
-  read() {}
-}
-
 export class CSVController {
   async write(request: Request, response: Response): Promise<Response> {
     const file = request.file;
